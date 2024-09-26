@@ -1,28 +1,35 @@
-﻿using System;
+﻿using CefSharp.WinForms;
+using CefSharp;
+using System;
 using System.Windows.Forms;
+using System.IO;
 
 namespace PhpMyAdmin
 {
     public partial class FrmMain : Form
     {
+        private ChromiumWebBrowser chromiumWebBrowser1;
         public FrmMain()
         {
             InitializeComponent();
+            InitializeChromium();
+
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void InitializeChromium()
         {
-            this.chromiumWebBrowser1.LoadUrl("https://pma.mythicalsystems.xyz");
-        }
-
-        private void lblclose_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-        private void lblminimize_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
+            var settings = new CefSettings();
+            settings.UserAgent = "PhpMyAdmin Desktop";
+            settings.IgnoreCertificateErrors = true;
+            settings.CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PhpMyAdmin Desktop");
+            settings.RootCachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PhpMyAdmin Desktop");
+            Console.WriteLine("Cache PATH: " + settings.CachePath);
+            Console.WriteLine("Root PATH: " + settings.RootCachePath);
+            Console.WriteLine("Browser PATH: " + settings.BrowserSubprocessPath);
+            Cef.Initialize(settings);
+            chromiumWebBrowser1 = new ChromiumWebBrowser("https://pma.mythicalsystems.xyz");
+            this.Controls.Add(chromiumWebBrowser1);
+            chromiumWebBrowser1.Dock = DockStyle.Fill;
         }
     }
 }
